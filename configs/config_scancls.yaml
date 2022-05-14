@@ -1,0 +1,36 @@
+EXP:
+  exp_name: &exp_name scanobjectnn_cls_point_mf
+  log_dir: &log_dir logs_scan/
+  # config_dir: configs/config.yaml
+
+DATA:
+  data_name: scanobjectnn #modelnet40 # scanobjectnn  # s3dis
+  data_dir: data/
+  num_point: 1024
+  batch_size: 16  # batch size for training
+  test_batch_size: 32  # batch size for validation during training, memory and speed tradeoff
+  workers: 8  # data loader workers
+
+MODEL:
+  num_classes: 15 # 15
+  token: 16
+  neighbor: 24
+
+TRAIN:
+  model_name: point_mf
+  model_copy_name: model_0
+  print_model: False
+  learning_rate: 0.01
+  epochs: 200
+  test_js: True
+  
+Distributed:
+  gpu: 0
+  dist_url: tcp://localhost:8888
+  dist_backend: 'nccl'
+  multiprocessing_distributed: True
+  world_size: 1
+  rank: 0
+
+Logger:
+  logger_filename: train.log

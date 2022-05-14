@@ -1,0 +1,49 @@
+EXP:
+  exp_name: &exp_name modelnet40_cls_pointgraph
+  # exp_name: &exp_name scanobjectnn_cls_pointgatv2_SGPool # 数据+任务+模型
+  # exp_name: &exp_name scanobjectnn_cls_dgcnnx2 # 数据+任务+模型
+  log_dir: &log_dir logs/
+  # config_dir: configs/config.yaml
+
+DATA:
+  data_name: modelnet40 #modelnet40 # scanobjectnn  # s3dis
+  data_dir: data/
+  num_point: 1024
+  batch_size: 32  # batch size for training
+  test_batch_size: 32  # batch size for validation during training, memory and speed tradeoff
+  workers: 8  # data loader workers
+
+MODEL:
+  num_classes: 40 # 15
+
+TRAIN:
+  model_name: curvenet
+  model_copy_name: model_0
+  print_model: False
+  learning_rate: 0.1
+  epochs: 200
+  test_js: False
+  
+
+Distributed:
+  gpu: 0
+  dist_url: tcp://localhost:8888
+  dist_backend: 'nccl'
+  multiprocessing_distributed: True
+  world_size: 1
+  rank: 0
+
+TEST:
+  test_list: dataset/s3dis/list/val5.txt
+  test_list_full: dataset/s3dis/list/val5_full.txt
+  split: val  # split in [train, val and test]
+  test_gpu: [0]
+  test_workers: 4
+  batch_size_test: 4
+  model_path:
+  save_folder:
+  names_path: data/s3dis/s3dis_names.txt
+Logger:
+  # exp_log_dir: &exp_log_dir !!python/object/apply:os.path.join [*log_dir, *exp_name]
+  # logger_filename: !!python/object/apply:os.path.join [*log_dir, *exp_name, "train.log"]
+  logger_filename: train.log
