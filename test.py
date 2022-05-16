@@ -2,23 +2,17 @@ import argparse
 import gc
 import importlib
 import os
-import sys
 import time
 
 import numpy as np
 import torch
-from tensorboardX import SummaryWriter
-from timm.scheduler.cosine_lr import CosineLRScheduler
-from timm.scheduler.step_lr import StepLRScheduler
 from timm.utils import AverageMeter, accuracy
-from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from data import dataset_get
-from utils import cal_loss, get_logger, read_yaml
+from utils import get_logger, read_yaml
 
-# sys.path.append("./") 
 parser = argparse.ArgumentParser(description='PyTorch Training')
 parser.add_argument('-c', '--config', default='configs/config.yaml', type=str, metavar='N',
                     help='number of data loading workers (default: 4)')
@@ -26,9 +20,7 @@ parser.add_argument('--resume', default=None, type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
 parser.add_argument('--exp_name', default=None, type=str, metavar='PATH',
                     help='exp_name')
-parser.add_argument('--model', type=str, help='model_name')          
-parser.add_argument('--seed', type=int, help='random seed')    
-parser.add_argument('--token', type=int, help='random seed')   
+parser.add_argument('--model', type=str, help='model_name')     
 
 def main():
     args = parser.parse_args()
@@ -40,34 +32,21 @@ def main():
         cfg.model_name = args.model
     if cfg.data_name == 'scanobjectnn':
         cfg.num_classes = 15
-    if args.token is not None:
-        cfg.token = args.token
 
     # prepare file structures
     time_str = time.strftime("%Y-%m-%d_%H:%M_", time.localtime())
-    root_dir = cfg.log_dir+time_str+cfg.exp_name
-    backup_dir = root_dir + '/backups'
+    root_dir = cfg.test_dir+time_str+cfg.exp_name
 
-    if not os.path.exists(cfg.log_dir):
-        os.makedirs(cfg.log_dir)
+    if not os.path.exists(cfg.test_dir):
+        os.makedirs(cfg.test_dir)
     if not os.path.exists(root_dir):
         os.makedirs(root_dir)
   
-
     logger = get_logger(os.path.join(root_dir, cfg.logger_filename))
-    # logger.info("start code ---------------")
     os.environ["CUDA_VISIBLE_DEVICES"] = '0'
-   
-    # logger.info("use Model: [ {} ]".format(cfg.model_name))
-    # logger.info("use Data: [ {} ]".format(cfg.data_name))
-    # logger.info("data class number: [ {} ]".format(cfg.num_classes))
-    # logger.info("epochs: [ {} ]".format(cfg.epochs))
-    # logger.info("lr: [ {} ]".format(cfg.learning_rate))
-    if args.seed is not None:
-        seed = args.seed
-    else:
-        seed = torch.randint(1, 10000,(1,))
-    # seed = 6666
+ 
+    seed = torch.randint(1, 10000,(1,))
+    seed = 5464
     logger.info("Seed: [ {} ]".format(seed))
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -77,11 +56,13 @@ def main():
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
     os.environ['PYTHONHASHSEED'] = str(seed)
-    model = getattr(importlib.import_module('models.{}'.format('model')), 'Module')(cfg).cuda()
+    logger.info("model_name: [ {} ]".format(cfg.model_name))
+    # print(cfg.model_name)
+    model = getattr(importlib.import_module('models.{}'.format(cfg.model_name)), 'Module')(cfg).cuda()
     # for param in model.parameters():
     #     print(param)
     # logger.info(model.state_dict())
-    a = model.token
+    # a = model.token
     
    
     # Optionally resume from a checkpoint
@@ -94,10 +75,10 @@ def main():
             # class_acc = checkpoint['class_acc']
             model.load_state_dict(checkpoint['model_state_dict'])
             # optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-            print("=> loaded checkpoint '{}' (epoch {})"
+            logger.info("=> loaded checkpoint '{}' (epoch {})"
                     .format(args.resume, checkpoint['epoch']))
         else:
-            print("=> no checkpoint found at '{}'".format(args.resume))
+            logger.info("=> no checkpoint found")
 
     '''DATA LOADING'''
     logger.info('Load dataset ---------------')

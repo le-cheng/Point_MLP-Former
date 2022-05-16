@@ -1,6 +1,7 @@
 EXP:
   exp_name: &exp_name scanobjectnn_cls_point_mf
   log_dir: &log_dir logs_scan/
+  test_dir: logs_test/
   # config_dir: configs/config.yaml
 
 DATA:
