@@ -1,5 +1,5 @@
 EXP:
-  exp_name: &exp_name scanobjectnn_cls_point_mf
+  exp_name: &exp_name scanobjectnn_cls_point_mfra
   log_dir: &log_dir logs_scan/
   test_dir: logs_test/
   # config_dir: configs/config.yaml
@@ -9,7 +9,7 @@ DATA:
   data_dir: data/
   num_point: 1024
   batch_size: 16  # batch size for training
-  test_batch_size: 32  # batch size for validation during training, memory and speed tradeoff
+  test_batch_size: 16  # batch size for validation during training, memory and speed tradeoff
   workers: 8  # data loader workers
 
 MODEL:

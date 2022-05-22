@@ -73,4 +73,13 @@ Fixed initial point is 0, can get 85.01 for testing.
 
 If you have a better solution, I'm glad you can let me know.
 
-# Citation
+## Acknowledgment
+
+Our implementation is mainly based on the following codebases.
+
+[Point-Transformers](https://github.com/qq456cvb/Point-Transformers.git),
+[PointMLP](https://github.com/ma-xu/pointMLP-pytorch.git),
+[swin-Transformer](https://github.com/microsoft/Swin-Transformer.git),
+[DGCNN](https://github.com/WangYueFt/dgcnn.git),
+[CurveNet](https://github.com/tiangexiang/CurveNet),
+[Pointnet2_PyTorch](https://github.com/erikwijmans/Pointnet2_PyTorch).
